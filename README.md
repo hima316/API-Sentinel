@@ -423,24 +423,37 @@ docker compose up -d
 
 ---
 
-## 12. Cloud Deployment Guide & Status
+## 12. Cloud Deployment Guide (Render)
 
-API Sentinel is container-compatible and prepared for deployment to serverless container hosts such as **Render**, **Railway**, or **Google Cloud Run**:
+API Sentinel is containerized and ready for 1-click or manual deployment to **Render** using Docker:
 
-### Deployment Steps (e.g., Render):
-1. Create a new **Web Service** and connect your repository.
-2. Select **Docker** as the environment.
-3. Configure Environment Variables in the hosting dashboard:
+### Option A: 1-Click Blueprint Deployment (render.yaml)
+1. Fork or push this repository to your GitHub account (`https://github.com/hima316/API-Sentinel.git`).
+2. In the [Render Dashboard](https://dashboard.render.com/), select **Blueprints** > **New Blueprint Instance**.
+3. Connect your repository. Render will automatically read `render.yaml` and configure the Docker runtime, non-root user, and `/health` health-check path.
+4. When prompted for `MONGODB_URI`, paste your MongoDB Atlas connection string securely into the dashboard prompt.
+5. Click **Apply**.
+
+### Option B: Manual Web Service Deployment
+1. In the [Render Dashboard](https://dashboard.render.com/), select **New +** > **Web Service**.
+2. Connect your repository (`hima316/API-Sentinel`).
+3. Select **Docker** as the runtime environment.
+4. Set **Branch** to `main`, **Dockerfile Path** to `./Dockerfile`, and **Docker Context** to `.`.
+5. Under **Advanced** > **Health Check Path**, enter `/health`.
+6. Add the following **Environment Variables** in the Render settings:
    - `ENVIRONMENT` = `production`
    - `DEBUG` = `false`
+   - `HOST` = `0.0.0.0`
    - `STORAGE_BACKEND` = `mongodb`
+   - `MONGODB_DATABASE` = `api_sentinel`
    - `MONGODB_URI` = `mongodb+srv://<username>:<password>@cluster0.example.mongodb.net/?retryWrites=true&w=majority`
-4. Set the Health Check path to `/health`.
-5. Deploy and verify `/health` and `/docs`.
+   - `ML_MODEL_PATH` = `models/isolation_forest.joblib`
+   - `ML_METADATA_PATH` = `models/model_metadata.json`
+7. Click **Create Web Service**.
 
-### Deployment Status:
-- **Prepared & Tested Locally**: Container specification, environment variable overrides, URI credential masking, and error handlers are tested and verified.
-- **Live Cloud Deployment**: Not deployed to a public cloud URL; execution stopped at the manual account creation and billing boundary.
+> **Note on Free Tier Sleep & Networking:**
+> - Render free-tier web services spin down after 15 minutes of inactivity. Incoming requests will experience a brief cold-start spin-up (~30-50s).
+> - Since Render assigns dynamic outbound IPs to free services, ensure your MongoDB Atlas **Network Access** allows `0.0.0.0/0` ("Allow Access from Anywhere") so the container can connect to your Atlas cluster.
 
 ---
 

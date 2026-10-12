@@ -1,0 +1,26 @@
+services:
+  - type: web
+    name: api-sentinel
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    plan: free
+    region: oregon
+    healthCheckPath: /health
+    envVars:
+      - key: ENVIRONMENT
+        value: production
+      - key: DEBUG
+        value: "false"
+      - key: HOST
+        value: 0.0.0.0
+      - key: STORAGE_BACKEND
+        value: mongodb
+      - key: MONGODB_DATABASE
+        value: api_sentinel
+      - key: MONGODB_URI
+        sync: false
+      - key: ML_MODEL_PATH
+        value: models/isolation_forest.joblib
+      - key: ML_METADATA_PATH
+        value: models/model_metadata.json
