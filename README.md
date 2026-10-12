@@ -1,5 +1,13 @@
 # API Sentinel — API Abuse & Anomaly Detection Platform
 
+[![Deployment Status](https://img.shields.io/badge/Render-Live%20Deployment-success?logo=render)](https://api-sentinel-fg9j.onrender.com)
+[![OpenAPI Docs](https://img.shields.io/badge/Swagger%20UI-Documentation-blue?logo=fastapi)](https://api-sentinel-fg9j.onrender.com/docs)
+[![Health Check](https://img.shields.io/badge/Health%20Check-Passing-brightgreen)](https://api-sentinel-fg9j.onrender.com/health)
+
+- **Live Public URL**: [https://api-sentinel-fg9j.onrender.com](https://api-sentinel-fg9j.onrender.com)
+- **Interactive OpenAPI Documentation**: [https://api-sentinel-fg9j.onrender.com/docs](https://api-sentinel-fg9j.onrender.com/docs)
+- **Health Check Endpoint**: [https://api-sentinel-fg9j.onrender.com/health](https://api-sentinel-fg9j.onrender.com/health)
+
 A backend-first API security monitoring system built with Python, FastAPI, and scikit-learn. API Sentinel records safe request telemetry, evaluates traffic against deterministic abuse rules and unsupervised Isolation Forest anomaly detection, deduplicates security incidents, and persists audit logs and alerts to in-memory storage or hosted MongoDB Atlas.
 
 ---
