@@ -1,0 +1,7 @@
+evaluation_mode,detector,total_samples,precision,recall,f1_score,false_positive_rate,true_positives,false_positives,true_negatives,false_negatives
+held_out_evaluation,Rule-Based Detection,700,1.0,0.74,0.8506,0.0,148,0,500,52
+held_out_evaluation,ML Anomaly Detection (Isolation Forest),700,0.8571,0.75,0.8,0.05,150,25,475,50
+held_out_evaluation,Combined Hybrid Detection,700,0.8889,1.0,0.9412,0.05,200,25,475,0
+live_simulation_evaluation,Rule-Based Detection,6,1.0,1.0,1.0,0.0,4,0,2,0
+live_simulation_evaluation,ML Anomaly Detection (Isolation Forest),6,1.0,0.75,0.8571,0.0,3,0,2,1
+live_simulation_evaluation,Combined Hybrid Detection,6,1.0,1.0,1.0,0.0,4,0,2,0

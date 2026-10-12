@@ -1,0 +1,84 @@
+{
+  "timestamp": "2026-10-12T07:46:21.322242+00:00",
+  "target_base_url": "http://127.0.0.1:8000",
+  "total_clients": 6,
+  "total_requests": 87,
+  "normal_clients_count": 2,
+  "malicious_clients_count": 4,
+  "scenarios": [
+    {
+      "client_id": "client-normal-alpha",
+      "scenario": "normal_browsing",
+      "ground_truth_label": 0,
+      "threat_category": "none",
+      "requests_sent": 15,
+      "status_distribution": {
+        "200": 15
+      },
+      "start_time": "2026-10-12T07:46:19.453161+00:00",
+      "end_time": "2026-10-12T07:46:19.959300+00:00"
+    },
+    {
+      "client_id": "client-normal-beta",
+      "scenario": "normal_authenticated",
+      "ground_truth_label": 0,
+      "threat_category": "none",
+      "requests_sent": 10,
+      "status_distribution": {
+        "200": 10
+      },
+      "start_time": "2026-10-12T07:46:19.959437+00:00",
+      "end_time": "2026-10-12T07:46:20.297745+00:00"
+    },
+    {
+      "client_id": "client-brute-force",
+      "scenario": "failed_logins_brute_force",
+      "ground_truth_label": 1,
+      "threat_category": "credential_stuffing",
+      "requests_sent": 7,
+      "status_distribution": {
+        "401": 7
+      },
+      "start_time": "2026-10-12T07:46:20.297913+00:00",
+      "end_time": "2026-10-12T07:46:20.538793+00:00"
+    },
+    {
+      "client_id": "client-request-burst",
+      "scenario": "request_burst",
+      "ground_truth_label": 1,
+      "threat_category": "traffic_burst",
+      "requests_sent": 35,
+      "status_distribution": {
+        "200": 35
+      },
+      "start_time": "2026-10-12T07:46:20.538938+00:00",
+      "end_time": "2026-10-12T07:46:20.650101+00:00"
+    },
+    {
+      "client_id": "client-endpoint-probing",
+      "scenario": "endpoint_probing",
+      "ground_truth_label": 1,
+      "threat_category": "directory_fuzzing",
+      "requests_sent": 10,
+      "status_distribution": {
+        "404": 10
+      },
+      "start_time": "2026-10-12T07:46:20.650165+00:00",
+      "end_time": "2026-10-12T07:46:20.982224+00:00"
+    },
+    {
+      "client_id": "client-mixed-abuse",
+      "scenario": "mixed_abuse",
+      "ground_truth_label": 1,
+      "threat_category": "multi_vector_abuse",
+      "requests_sent": 10,
+      "status_distribution": {
+        "200": 3,
+        "401": 3,
+        "404": 4
+      },
+      "start_time": "2026-10-12T07:46:20.982409+00:00",
+      "end_time": "2026-10-12T07:46:21.322228+00:00"
+    }
+  ]
+}

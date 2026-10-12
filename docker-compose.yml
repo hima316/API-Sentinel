@@ -1,0 +1,33 @@
+# ==============================================================================
+# API Sentinel - Docker Compose Configuration
+# ==============================================================================
+
+version: "3.8"
+
+services:
+  api-sentinel:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: api-sentinel:latest
+    container_name: api-sentinel
+    restart: unless-stopped
+    ports:
+      - "${PORT:-8000}:8000"
+    environment:
+      - ENVIRONMENT=production
+      - DEBUG=false
+      - HOST=0.0.0.0
+      - PORT=8000
+      - STORAGE_BACKEND=${STORAGE_BACKEND:-memory}
+      # MongoDB Atlas connection (optional, defaults to empty / in-memory storage)
+      - MONGODB_URI=${MONGODB_URI:-}
+      - MONGODB_DATABASE=${MONGODB_DATABASE:-api_sentinel}
+      - ML_MODEL_PATH=models/isolation_forest.joblib
+      - ML_METADATA_PATH=models/model_metadata.json
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request, os, sys; port = os.getenv('PORT', '8000'); sys.exit(0 if urllib.request.urlopen(f'http://127.0.0.1:{port}/health', timeout=3).getcode() == 200 else 1)\""]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 5s

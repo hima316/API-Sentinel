@@ -1,0 +1,173 @@
+{
+  "timestamp": "2026-10-12T07:48:00.708964+00:00",
+  "disclaimer": "Isolation Forest flags statistical deviations from training baselines, indicating unusual behavior rather than confirmed malicious intent. Synthetic baseline training data does not establish real-world accuracy.",
+  "held_out_evaluation": {
+    "evaluation_dataset": "held_out_synthetic",
+    "random_seed": 2026,
+    "sample_counts": {
+      "total": 700,
+      "normal": 500,
+      "attack": 200
+    },
+    "detectors": {
+      "rule_based": {
+        "detector_name": "Rule-Based Detection",
+        "total_samples": 700,
+        "confusion_matrix": {
+          "true_positives": 148,
+          "false_positives": 0,
+          "true_negatives": 500,
+          "false_negatives": 52
+        },
+        "precision": 1.0,
+        "recall": 0.74,
+        "f1_score": 0.8506,
+        "false_positive_rate": 0.0
+      },
+      "ml_isolation_forest": {
+        "detector_name": "ML Anomaly Detection (Isolation Forest)",
+        "total_samples": 700,
+        "confusion_matrix": {
+          "true_positives": 150,
+          "false_positives": 25,
+          "true_negatives": 475,
+          "false_negatives": 50
+        },
+        "precision": 0.8571,
+        "recall": 0.75,
+        "f1_score": 0.8,
+        "false_positive_rate": 0.05
+      },
+      "combined_hybrid": {
+        "detector_name": "Combined Hybrid Detection",
+        "total_samples": 700,
+        "confusion_matrix": {
+          "true_positives": 200,
+          "false_positives": 25,
+          "true_negatives": 475,
+          "false_negatives": 0
+        },
+        "precision": 0.8889,
+        "recall": 1.0,
+        "f1_score": 0.9412,
+        "false_positive_rate": 0.05
+      }
+    },
+    "disclaimer": "Isolation Forest flags statistical deviations from training baselines, indicating unusual behavior rather than confirmed malicious intent. Synthetic baseline training data does not establish real-world accuracy."
+  },
+  "live_simulation_evaluation": {
+    "evaluation_dataset": "live_traffic_simulation",
+    "api_url": "http://127.0.0.1:8000",
+    "sample_counts": {
+      "total": 6,
+      "normal": 2,
+      "attack": 4
+    },
+    "detectors": {
+      "rule_based": {
+        "detector_name": "Rule-Based Detection",
+        "total_samples": 6,
+        "confusion_matrix": {
+          "true_positives": 4,
+          "false_positives": 0,
+          "true_negatives": 2,
+          "false_negatives": 0
+        },
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1_score": 1.0,
+        "false_positive_rate": 0.0
+      },
+      "ml_isolation_forest": {
+        "detector_name": "ML Anomaly Detection (Isolation Forest)",
+        "total_samples": 6,
+        "confusion_matrix": {
+          "true_positives": 3,
+          "false_positives": 0,
+          "true_negatives": 2,
+          "false_negatives": 1
+        },
+        "precision": 1.0,
+        "recall": 0.75,
+        "f1_score": 0.8571,
+        "false_positive_rate": 0.0
+      },
+      "combined_hybrid": {
+        "detector_name": "Combined Hybrid Detection",
+        "total_samples": 6,
+        "confusion_matrix": {
+          "true_positives": 4,
+          "false_positives": 0,
+          "true_negatives": 2,
+          "false_negatives": 0
+        },
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1_score": 1.0,
+        "false_positive_rate": 0.0
+      }
+    },
+    "client_breakdown": [
+      {
+        "client_id": "client-normal-alpha",
+        "scenario": "normal_browsing",
+        "ground_truth": 0,
+        "rule_alert_triggered": false,
+        "ml_alert_triggered": false,
+        "alerts_recorded": []
+      },
+      {
+        "client_id": "client-normal-beta",
+        "scenario": "normal_authenticated",
+        "ground_truth": 0,
+        "rule_alert_triggered": false,
+        "ml_alert_triggered": false,
+        "alerts_recorded": []
+      },
+      {
+        "client_id": "client-brute-force",
+        "scenario": "failed_logins_brute_force",
+        "ground_truth": 1,
+        "rule_alert_triggered": true,
+        "ml_alert_triggered": true,
+        "alerts_recorded": [
+          "ML Anomaly Detection",
+          "Repeated Failed Logins"
+        ]
+      },
+      {
+        "client_id": "client-request-burst",
+        "scenario": "request_burst",
+        "ground_truth": 1,
+        "rule_alert_triggered": true,
+        "ml_alert_triggered": false,
+        "alerts_recorded": [
+          "Request Burst"
+        ]
+      },
+      {
+        "client_id": "client-endpoint-probing",
+        "scenario": "endpoint_probing",
+        "ground_truth": 1,
+        "rule_alert_triggered": true,
+        "ml_alert_triggered": true,
+        "alerts_recorded": [
+          "ML Anomaly Detection",
+          "Endpoint Probing"
+        ]
+      },
+      {
+        "client_id": "client-mixed-abuse",
+        "scenario": "mixed_abuse",
+        "ground_truth": 1,
+        "rule_alert_triggered": true,
+        "ml_alert_triggered": true,
+        "alerts_recorded": [
+          "ML Anomaly Detection",
+          "Endpoint Probing"
+        ]
+      }
+    ],
+    "disclaimer": "Isolation Forest flags statistical deviations from training baselines, indicating unusual behavior rather than confirmed malicious intent. Synthetic baseline training data does not establish real-world accuracy."
+  }
+}

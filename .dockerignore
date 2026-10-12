@@ -1,0 +1,54 @@
+# ==============================================================================
+# API Sentinel - .dockerignore
+# Excludes local environments, caches, secrets, and transient development files
+# ==============================================================================
+
+# Version control
+.git
+.gitignore
+
+# Virtual environments
+.venv
+venv
+env
+ENV
+*.venv
+
+# Python bytecode and caching
+__pycache__
+*.py[cod]
+*$py.class
+*.so
+
+# Test artifacts and coverage
+.pytest_cache
+.coverage
+.coverage.*
+htmlcov
+coverage.xml
+
+# Linters, code analyzers, and IDEs
+.mypy_cache
+.ruff_cache
+.vscode
+.idea
+*.swp
+*.swo
+
+# Environment variables & secrets (CRITICAL SECURITY)
+.env
+.env.docker
+.env.local
+.env.*
+*.env
+!.env.example
+
+# Local reports and synthetic test output
+reports/
+*.log
+logs/
+
+# Packaging artifacts
+dist/
+build/
+*.egg-info

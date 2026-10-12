@@ -1,0 +1,20 @@
+{
+  "model_type": "IsolationForest",
+  "algorithm": "sklearn.ensemble.IsolationForest",
+  "version": "1.0.0",
+  "created_at": "2026-10-12T07:47:12.698997+00:00",
+  "feature_names": [
+    "request_count",
+    "failed_login_count",
+    "error_4xx_proportion",
+    "distinct_paths_count",
+    "not_found_count"
+  ],
+  "n_features": 5,
+  "n_train_samples": 1500,
+  "contamination": 0.05,
+  "random_state": 42,
+  "n_estimators": 100,
+  "observation_window_seconds": 300,
+  "disclaimer": "Isolation Forest flags statistical deviations from training baselines, indicating unusual behavior rather than confirmed malicious intent. Synthetic baseline training data does not establish real-world accuracy."
+}
