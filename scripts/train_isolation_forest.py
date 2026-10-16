@@ -14,11 +14,13 @@ Usage:
 """
 
 import argparse
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 import json
 import logging
 from pathlib import Path
 from typing import Any, Dict, Tuple
+
+IST = timezone(timedelta(hours=5, minutes=30), name="IST")
 
 import joblib
 import numpy as np
@@ -146,7 +148,7 @@ def train_model(
         "model_type": "IsolationForest",
         "algorithm": "sklearn.ensemble.IsolationForest",
         "version": "1.0.0",
-        "created_at": datetime.now(timezone.utc).isoformat(),
+        "created_at": datetime.now(IST).isoformat(),
         "feature_names": FEATURE_NAMES,
         "n_features": len(FEATURE_NAMES),
         "n_train_samples": n_samples,

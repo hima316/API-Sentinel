@@ -17,6 +17,7 @@ from fastapi import Request, Response
 from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
 
 from app.core.config import settings
+from app.core.timezone import now_ist
 from app.models.log import RequestLog
 from app.repositories.log_repository import get_log_repository
 from app.rules.engine import get_detection_engine
@@ -46,7 +47,7 @@ class RequestLoggingMiddleware(BaseHTTPMiddleware):
             # If an unhandled exception propagates, record HTTP 500 and re-raise
             process_time_ms = round((time.perf_counter() - start_time) * 1000, 2)
             log_entry = RequestLog(
-                timestamp=datetime.now(timezone.utc),
+                timestamp=now_ist(),
                 client_id=client_id,
                 method=request.method,
                 path=request.url.path,
@@ -60,7 +61,7 @@ class RequestLoggingMiddleware(BaseHTTPMiddleware):
 
         # Store safe audit record in repository (exactly once per request)
         log_entry = RequestLog(
-            timestamp=datetime.now(timezone.utc),
+            timestamp=now_ist(),
             client_id=client_id,
             method=request.method,
             path=request.url.path,

@@ -19,6 +19,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 from app.core.config import settings
+from app.core.timezone import IST, now_ist
 from app.ml.detector import (
     DISCLAIMER_TEXT,
     AnomalyDetector,
@@ -55,7 +56,7 @@ def make_log(
 ) -> RequestLog:
     """Helper to build RequestLog fixture."""
     return RequestLog(
-        timestamp=timestamp or datetime.now(timezone.utc),
+        timestamp=timestamp or now_ist(),
         client_id=client_id,
         method=method,
         path=path,
@@ -71,7 +72,7 @@ def make_log(
 
 def test_extract_client_features_normal_traffic() -> None:
     """Verify that normal browsing traffic computes expected feature values."""
-    now = datetime(2026, 10, 12, 12, 0, 0, tzinfo=timezone.utc)
+    now = datetime(2026, 10, 12, 12, 0, 0, tzinfo=IST)
     logs = [
         make_log("client-1", "/api/products", 200, timestamp=now - timedelta(seconds=50)),
         make_log("client-1", "/api/products/1", 200, timestamp=now - timedelta(seconds=40)),
@@ -91,7 +92,7 @@ def test_extract_client_features_normal_traffic() -> None:
 
 def test_extract_client_features_failed_logins() -> None:
     """Verify that failed logins increment failed_login_count and error_4xx_proportion."""
-    now = datetime(2026, 10, 12, 12, 0, 0, tzinfo=timezone.utc)
+    now = datetime(2026, 10, 12, 12, 0, 0, tzinfo=IST)
     logs = [
         make_log("client-2", "/api/login", 401, method="POST", timestamp=now - timedelta(seconds=10)),
         make_log("client-2", "/api/login", 401, method="POST", timestamp=now - timedelta(seconds=5)),
@@ -108,7 +109,7 @@ def test_extract_client_features_failed_logins() -> None:
 
 def test_extract_client_features_404_probing() -> None:
     """Verify that 404 responses increment not_found_count and error_4xx_proportion."""
-    now = datetime(2026, 10, 12, 12, 0, 0, tzinfo=timezone.utc)
+    now = datetime(2026, 10, 12, 12, 0, 0, tzinfo=IST)
     logs = [
         make_log("scanner", "/admin.php", 404, timestamp=now - timedelta(seconds=20)),
         make_log("scanner", "/.env", 404, timestamp=now - timedelta(seconds=15)),
@@ -126,7 +127,7 @@ def test_extract_client_features_404_probing() -> None:
 
 def test_extract_client_features_ignores_old_logs() -> None:
     """Logs older than window_seconds must be excluded from feature calculation."""
-    now = datetime(2026, 10, 12, 12, 0, 0, tzinfo=timezone.utc)
+    now = datetime(2026, 10, 12, 12, 0, 0, tzinfo=IST)
     logs = [
         # Inside 300s window
         make_log("client-3", "/api/products", 200, timestamp=now - timedelta(seconds=100)),
@@ -144,7 +145,7 @@ def test_extract_client_features_ignores_old_logs() -> None:
 
 def test_extract_client_features_empty_logs() -> None:
     """Clients with zero logs in window should return zeroed features without division error."""
-    now = datetime(2026, 10, 12, 12, 0, 0, tzinfo=timezone.utc)
+    now = datetime(2026, 10, 12, 12, 0, 0, tzinfo=IST)
     features = extract_client_features("empty-client", [], now, window_seconds=300)
     assert features.request_count == 0
     assert features.error_4xx_proportion == 0.0
@@ -155,7 +156,7 @@ def test_extract_client_features_empty_logs() -> None:
 
 def test_extract_features_no_sensitive_data() -> None:
     """Ensure feature dictionary contains only numerical aggregations and client ID."""
-    now = datetime(2026, 10, 12, 12, 0, 0, tzinfo=timezone.utc)
+    now = datetime(2026, 10, 12, 12, 0, 0, tzinfo=IST)
     logs = [make_log("client-safe", "/api/products", 200, timestamp=now)]
     features = extract_client_features("client-safe", logs, now)
 
@@ -167,7 +168,7 @@ def test_extract_features_no_sensitive_data() -> None:
 
 def test_extract_features_for_all_clients() -> None:
     """Verify grouping and feature extraction across multiple distinct clients."""
-    now = datetime(2026, 10, 12, 12, 0, 0, tzinfo=timezone.utc)
+    now = datetime(2026, 10, 12, 12, 0, 0, tzinfo=IST)
     logs = [
         make_log("user-a", "/api/products", 200, timestamp=now - timedelta(seconds=10)),
         make_log("user-a", "/api/products/1", 200, timestamp=now - timedelta(seconds=5)),
@@ -339,7 +340,7 @@ def test_predict_normal_vs_anomalous_feature_vector() -> None:
 def test_create_anomaly_alert_contains_required_fields() -> None:
     """Verify generated ML alert contains rule_name, score, features, and disclaimer."""
     detector = AnomalyDetector()
-    now = datetime(2026, 10, 12, 12, 0, 0, tzinfo=timezone.utc)
+    now = datetime(2026, 10, 12, 12, 0, 0, tzinfo=IST)
     features = ClientFeatures(
         client_id="anomaly-user",
         observation_window_seconds=300,
@@ -364,7 +365,7 @@ def test_create_anomaly_alert_contains_required_fields() -> None:
 def test_rule_and_ml_alerts_are_distinguishable() -> None:
     """Rule-based alerts and ML alerts must have distinct rule names."""
     detector = AnomalyDetector()
-    now = datetime(2026, 10, 12, 12, 0, 0, tzinfo=timezone.utc)
+    now = datetime(2026, 10, 12, 12, 0, 0, tzinfo=IST)
     features = ClientFeatures(
         client_id="test-client",
         observation_window_seconds=300,
@@ -383,7 +384,7 @@ def test_ml_alert_cooldown_deduplication() -> None:
     """Engine must suppress duplicate ML alerts for same client during cooldown window."""
     detector = AnomalyDetector(cooldown_seconds=300)
     alert_repo = InMemoryAlertRepository()
-    now = datetime(2026, 10, 12, 12, 0, 0, tzinfo=timezone.utc)
+    now = datetime(2026, 10, 12, 12, 0, 0, tzinfo=IST)
 
     # Generate 50 anomalous requests for attacker
     logs = [

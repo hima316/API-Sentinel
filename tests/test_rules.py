@@ -4,6 +4,7 @@ from datetime import datetime, timedelta, timezone
 from typing import List
 import pytest
 
+from app.core.timezone import IST, now_ist
 from app.models.alert import AlertSeverity, AlertStatus
 from app.models.log import RequestLog
 from app.repositories.alert_repository import InMemoryAlertRepository
@@ -29,7 +30,7 @@ def create_log(
 ) -> RequestLog:
     """Helper to build a deterministic RequestLog fixture."""
     return RequestLog(
-        timestamp=timestamp or datetime.now(timezone.utc),
+        timestamp=timestamp or now_ist(),
         client_id=client_id,
         method=method,
         path=path,
@@ -45,7 +46,7 @@ def create_log(
 
 def test_repeated_failed_logins_triggers_at_threshold() -> None:
     """Rule should trigger an alert when failed logins meet or exceed threshold."""
-    now = datetime(2026, 10, 12, 12, 0, 0, tzinfo=timezone.utc)
+    now = datetime(2026, 10, 12, 12, 0, 0, tzinfo=IST)
     rule = RepeatedFailedLoginsRule(threshold=5, window_seconds=60)
 
     # 5 failed login attempts within 60s
@@ -73,7 +74,7 @@ def test_repeated_failed_logins_triggers_at_threshold() -> None:
 
 def test_repeated_failed_logins_below_threshold_does_not_trigger() -> None:
     """Rule should NOT trigger when failed logins count is below threshold."""
-    now = datetime(2026, 10, 12, 12, 0, 0, tzinfo=timezone.utc)
+    now = datetime(2026, 10, 12, 12, 0, 0, tzinfo=IST)
     rule = RepeatedFailedLoginsRule(threshold=5, window_seconds=60)
 
     # 4 failed login attempts (below threshold of 5)
@@ -94,7 +95,7 @@ def test_repeated_failed_logins_below_threshold_does_not_trigger() -> None:
 
 def test_repeated_failed_logins_ignores_successful_logins() -> None:
     """Successful logins (HTTP 200) must NOT count toward failed login threshold."""
-    now = datetime(2026, 10, 12, 12, 0, 0, tzinfo=timezone.utc)
+    now = datetime(2026, 10, 12, 12, 0, 0, tzinfo=IST)
     rule = RepeatedFailedLoginsRule(threshold=5, window_seconds=60)
 
     # 2 failed and 4 successful logins
@@ -130,7 +131,7 @@ def test_repeated_failed_logins_ignores_successful_logins() -> None:
 
 def test_repeated_failed_logins_ignores_expired_window_attempts() -> None:
     """Failed logins older than the window must not trigger the rule."""
-    now = datetime(2026, 10, 12, 12, 0, 0, tzinfo=timezone.utc)
+    now = datetime(2026, 10, 12, 12, 0, 0, tzinfo=IST)
     rule = RepeatedFailedLoginsRule(threshold=5, window_seconds=60)
 
     # 5 failed attempts, but 4 occurred > 60 seconds ago
@@ -183,7 +184,7 @@ def test_repeated_failed_logins_ignores_expired_window_attempts() -> None:
 
 def test_request_burst_triggers_at_threshold() -> None:
     """Rule should trigger an alert when request volume reaches burst threshold."""
-    now = datetime(2026, 10, 12, 12, 0, 0, tzinfo=timezone.utc)
+    now = datetime(2026, 10, 12, 12, 0, 0, tzinfo=IST)
     rule = RequestBurstRule(threshold=30, window_seconds=10)
 
     # 30 requests within 10 seconds
@@ -209,7 +210,7 @@ def test_request_burst_triggers_at_threshold() -> None:
 
 def test_request_burst_below_threshold_does_not_trigger() -> None:
     """Rule should NOT trigger when request volume is below burst threshold."""
-    now = datetime(2026, 10, 12, 12, 0, 0, tzinfo=timezone.utc)
+    now = datetime(2026, 10, 12, 12, 0, 0, tzinfo=IST)
     rule = RequestBurstRule(threshold=30, window_seconds=10)
 
     # 29 requests within 10 seconds
@@ -229,7 +230,7 @@ def test_request_burst_below_threshold_does_not_trigger() -> None:
 
 def test_request_burst_ignores_old_requests() -> None:
     """Requests outside the burst window should not count toward burst threshold."""
-    now = datetime(2026, 10, 12, 12, 0, 0, tzinfo=timezone.utc)
+    now = datetime(2026, 10, 12, 12, 0, 0, tzinfo=IST)
     rule = RequestBurstRule(threshold=30, window_seconds=10)
 
     # 35 requests total, but only 10 inside the 10-second window
@@ -260,7 +261,7 @@ def test_request_burst_ignores_old_requests() -> None:
 
 def test_endpoint_probing_triggers_on_distinct_paths_and_404s() -> None:
     """Rule should trigger when client probes distinct paths with multiple 404 responses."""
-    now = datetime(2026, 10, 12, 12, 0, 0, tzinfo=timezone.utc)
+    now = datetime(2026, 10, 12, 12, 0, 0, tzinfo=IST)
     rule = EndpointProbingRule(
         distinct_paths_threshold=5,
         not_found_threshold=3,
@@ -300,7 +301,7 @@ def test_endpoint_probing_triggers_on_distinct_paths_and_404s() -> None:
 
 def test_endpoint_probing_repeated_same_path_does_not_trigger() -> None:
     """Repeated 404s on the SAME single path must NOT trigger probing rule."""
-    now = datetime(2026, 10, 12, 12, 0, 0, tzinfo=timezone.utc)
+    now = datetime(2026, 10, 12, 12, 0, 0, tzinfo=IST)
     rule = EndpointProbingRule(
         distinct_paths_threshold=5,
         not_found_threshold=3,
@@ -326,7 +327,7 @@ def test_endpoint_probing_repeated_same_path_does_not_trigger() -> None:
 
 def test_endpoint_probing_distinct_valid_paths_does_not_trigger() -> None:
     """Accessing many valid endpoints (HTTP 200) without 404s must NOT trigger probing rule."""
-    now = datetime(2026, 10, 12, 12, 0, 0, tzinfo=timezone.utc)
+    now = datetime(2026, 10, 12, 12, 0, 0, tzinfo=IST)
     rule = EndpointProbingRule(
         distinct_paths_threshold=5,
         not_found_threshold=3,
@@ -366,7 +367,7 @@ def test_endpoint_probing_distinct_valid_paths_does_not_trigger() -> None:
 
 def test_normal_client_activity_generates_zero_alerts() -> None:
     """Normal legitimate client workflow must never trigger any alerts."""
-    now = datetime(2026, 10, 12, 12, 0, 0, tzinfo=timezone.utc)
+    now = datetime(2026, 10, 12, 12, 0, 0, tzinfo=IST)
     log_repo = InMemoryLogRepository()
     alert_repo = InMemoryAlertRepository()
 
@@ -392,7 +393,7 @@ def test_normal_client_activity_generates_zero_alerts() -> None:
 
 def test_alert_cooldown_deduplication() -> None:
     """Engine must suppress duplicate alerts for the same client and rule during cooldown."""
-    now = datetime(2026, 10, 12, 12, 0, 0, tzinfo=timezone.utc)
+    now = datetime(2026, 10, 12, 12, 0, 0, tzinfo=IST)
     log_repo = InMemoryLogRepository()
     alert_repo = InMemoryAlertRepository()
 

@@ -15,6 +15,7 @@ from typing import Any, Dict, List, Optional, Tuple
 import joblib
 
 from app.core.config import settings
+from app.core.timezone import IST, now_ist
 from app.models.alert import Alert, AlertSeverity, AlertStatus
 from app.models.log import RequestLog
 from app.ml.features import (
@@ -250,7 +251,7 @@ class AnomalyDetector:
         Args:
             logs: Recent request log entries from storage.
             alert_repo: Repository to store alerts and query for deduplication.
-            current_time: Reference time for observation window (defaults to now UTC).
+            current_time: Reference time for observation window (defaults to now IST).
             cooldown_seconds: Minimum time between successive ML alerts for the same client.
             target_client_id: If specified, analyze only this client; otherwise all active clients.
 
@@ -260,7 +261,7 @@ class AnomalyDetector:
         Raises:
             ModelNotFoundError: If model is not loaded. Never silently skips analysis.
         """
-        now = current_time or datetime.now(timezone.utc)
+        now = current_time or now_ist()
         cooldown = cooldown_seconds if cooldown_seconds is not None else self.cooldown_seconds
 
         if not self.is_available():

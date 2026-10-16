@@ -154,7 +154,7 @@ api-sentinel/
 
 ### A. Data Minimization & Safe Logging
 - Never stores passwords, tokens, query credentials, or request bodies.
-- Records safe telemetry: `timestamp` (UTC), `client_id` (via `X-Client-ID` header or default), `method`, `path`, `status_code`, and `process_time_ms`.
+- Records safe telemetry: `timestamp` (IST), `client_id` (via `X-Client-ID` header or default), `method`, `path`, `status_code`, and `process_time_ms`.
 - Each request is logged exactly once upon completion.
 
 ### B. Rule-Based Abuse Detection
@@ -323,87 +323,7 @@ python scripts/evaluate_detection.py --mode live --manifest reports/simulation_m
 
 ---
 
-## 10. API Examples
-
-### 1. Health Check
-```bash
-curl -s http://127.0.0.1:8000/health
-```
-```json
-{
-  "status": "healthy",
-  "app_name": "API Sentinel",
-  "environment": "development",
-  "version": "0.1.0"
-}
-```
-
-### 2. Simulated Login
-```bash
-curl -s -X POST http://127.0.0.1:8000/api/login \
-  -H "Content-Type: application/json" \
-  -H "X-Client-ID: client-demo" \
-  -d '{"username": "admin", "password": "wrongpassword"}'
-```
-```json
-{
-  "detail": "Invalid username or password"
-}
-```
-
-### 3. Retrieve Audit Logs
-```bash
-curl -s "http://127.0.0.1:8000/logs?limit=2"
-```
-```json
-[
-  {
-    "id": "89476d1c-acc7-490d-9fc8-f14b05b6cdb8",
-    "timestamp": "2026-10-12T07:46:21.290954Z",
-    "client_id": "client-mixed-abuse",
-    "method": "POST",
-    "path": "/api/login",
-    "status_code": 401,
-    "process_time_ms": 1.36
-  }
-]
-```
-
-### 4. Trigger ML Anomaly Analysis
-```bash
-curl -s -X POST http://127.0.0.1:8000/analysis/run
-```
-```json
-{
-  "status": "completed",
-  "observation_window_seconds": 300,
-  "clients_analyzed": 6,
-  "anomalies_detected": 3,
-  "alerts_created": 3
-}
-```
-
-### 5. Retrieve Security Alerts
-```bash
-curl -s "http://127.0.0.1:8000/alerts?limit=1"
-```
-```json
-[
-  {
-    "id": "e2158e24-9510-475f-a62e-ee9e7d507a76",
-    "timestamp": "2026-10-12T07:46:21.153836Z",
-    "client_id": "client-mixed-abuse",
-    "rule_name": "Endpoint Probing",
-    "severity": "high",
-    "reason": "Client 'client-mixed-abuse' accessed 6 distinct paths with 3 404 responses within 60s.",
-    "status": "open"
-  }
-]
-```
-
----
-
-## 11. Docker Packaging & Local Usage
+## 10. Docker Packaging & Local Usage
 
 The application includes a production-ready `Dockerfile` and `docker-compose.yml`:
 - **Lightweight & Secure**: Based on `python:3.11-slim`, executed as non-root user `appuser` (UID 1001).
@@ -431,7 +351,7 @@ docker compose up -d
 
 ---
 
-## 12. Cloud Deployment Guide (Render)
+## 11. Cloud Deployment Guide (Render)
 
 API Sentinel is containerized and ready for 1-click or manual deployment to **Render** using Docker:
 
@@ -465,7 +385,7 @@ API Sentinel is containerized and ready for 1-click or manual deployment to **Re
 
 ---
 
-## 13. Running Automated Tests
+## 12. Running Automated Tests
 
 ```bash
 pytest -v
@@ -483,7 +403,7 @@ All 86 tests execute in <11s:
 
 ---
 
-## 14. Known Limitations & Future Improvements
+## 13. Known Limitations & Future Improvements
 
 1. **Unsupervised Statistical Baseline**: Isolation Forest flags statistical deviations, not confirmed malicious intent. In production, this requires periodic retraining or baseline drift monitoring.
 2. **Monitoring-Only Architecture**: The current architecture records and alerts on suspicious activity without inline blocking or active rate limiting.

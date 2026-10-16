@@ -26,7 +26,7 @@ class BaseRule(ABC):
         Args:
             client_id: Identifier of the client being evaluated.
             logs: List of recent RequestLog instances for this client.
-            current_time: Current UTC timestamp representing evaluation time.
+            current_time: Current IST timestamp representing evaluation time.
 
         Returns:
             An Alert instance if abuse is detected, otherwise None.

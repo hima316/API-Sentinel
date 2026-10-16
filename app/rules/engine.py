@@ -10,6 +10,7 @@ import threading
 from typing import List, Optional
 
 from app.core.config import settings
+from app.core.timezone import IST, now_ist
 from app.models.alert import Alert
 from app.repositories.alert_repository import (
     BaseAlertRepository,
@@ -80,12 +81,12 @@ class AbuseDetectionEngine:
 
         Args:
             client_id: Identifier of the client to inspect.
-            current_time: Evaluation time (defaults to datetime.now(timezone.utc)).
+            current_time: Evaluation time (defaults to now_ist()).
 
         Returns:
             List of newly created Alert instances (empty if none fired or suppressed).
         """
-        now = current_time or datetime.now(timezone.utc)
+        now = current_time or now_ist()
 
         # Retrieve recent logs for this client.
         # Window of 300 seconds is enough to cover all configured rule windows.

@@ -114,6 +114,7 @@ class MongoDBManager:
                         serverSelectionTimeoutMS=settings.MONGODB_SERVER_SELECTION_TIMEOUT_MS,
                         appname="API-Sentinel",
                         retryWrites=True,
+                        tz_aware=True,
                     )
                     # Verify connectivity immediately with a lightweight ping command
                     self._client.admin.command("ping")

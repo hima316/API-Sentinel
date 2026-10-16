@@ -10,6 +10,8 @@ from typing import Optional
 import uuid
 from pydantic import BaseModel, Field, field_validator
 
+from app.core.timezone import IST, now_ist
+
 
 class RequestLog(BaseModel):
     """Schema representing an audited API request event."""
@@ -19,8 +21,8 @@ class RequestLog(BaseModel):
         description="Unique log entry identifier",
     )
     timestamp: datetime = Field(
-        default_factory=lambda: datetime.now(timezone.utc),
-        description="UTC timestamp when the request occurred",
+        default_factory=now_ist,
+        description="IST timestamp when the request occurred",
     )
     client_id: str = Field(
         ...,
@@ -36,8 +38,10 @@ class RequestLog(BaseModel):
 
     @field_validator("timestamp", mode="after")
     @classmethod
-    def ensure_utc_timestamp(cls, v: datetime) -> datetime:
-        """Ensure timestamp is timezone-aware UTC."""
+    def ensure_ist_timestamp(cls, v: datetime) -> datetime:
+        """Ensure timestamp is timezone-aware IST."""
         if v.tzinfo is None:
-            return v.replace(tzinfo=timezone.utc)
-        return v
+            return v.replace(tzinfo=timezone.utc).astimezone(IST)
+        return v.astimezone(IST)
+
+    ensure_utc_timestamp = ensure_ist_timestamp

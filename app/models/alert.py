@@ -6,6 +6,8 @@ from typing import Any, Dict, Optional
 import uuid
 from pydantic import BaseModel, Field, field_validator
 
+from app.core.timezone import IST, now_ist
+
 
 class AlertSeverity(str, Enum):
     """Severity levels for generated security alerts."""
@@ -32,17 +34,19 @@ class Alert(BaseModel):
         description="Unique alert identifier",
     )
     timestamp: datetime = Field(
-        default_factory=lambda: datetime.now(timezone.utc),
-        description="UTC timestamp when the alert was triggered",
+        default_factory=now_ist,
+        description="IST timestamp when the alert was triggered",
     )
 
     @field_validator("timestamp", mode="after")
     @classmethod
-    def ensure_utc_timestamp(cls, v: datetime) -> datetime:
-        """Ensure timestamp is timezone-aware UTC."""
+    def ensure_ist_timestamp(cls, v: datetime) -> datetime:
+        """Ensure timestamp is timezone-aware IST."""
         if v.tzinfo is None:
-            return v.replace(tzinfo=timezone.utc)
-        return v
+            return v.replace(tzinfo=timezone.utc).astimezone(IST)
+        return v.astimezone(IST)
+
+    ensure_utc_timestamp = ensure_ist_timestamp
     client_id: str = Field(
         ...,
         description="Identifier of the abusive or anomalous client",

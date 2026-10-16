@@ -75,7 +75,7 @@ def extract_client_features(
     Args:
         client_id: The target client identifier.
         logs: History of RequestLog items for this client.
-        current_time: Current reference time (UTC).
+        current_time: Current reference time (IST).
         window_seconds: Size of observation window in seconds (defaults to 300s).
 
     Returns:
@@ -142,7 +142,7 @@ def extract_features_for_all_clients(
 
     Args:
         logs: Collection of recent RequestLog items.
-        current_time: Current reference time (UTC).
+        current_time: Current reference time (IST).
         window_seconds: Size of observation window in seconds.
 
     Returns:

@@ -1,5 +1,6 @@
 """Tests for demonstration API endpoints and request logging functionality."""
 
+from datetime import timedelta
 from fastapi.testclient import TestClient
 import pytest
 
@@ -134,6 +135,7 @@ def test_request_logging_metadata_attributes(client: TestClient) -> None:
     assert log.status_code == 200
     assert log.process_time_ms >= 0.0
     assert log.timestamp is not None
+    assert log.timestamp.utcoffset() == timedelta(hours=5, minutes=30)
     # Verify response header was attached
     assert "X-Process-Time-Ms" in response.headers
 

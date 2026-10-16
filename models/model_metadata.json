@@ -2,7 +2,7 @@
   "model_type": "IsolationForest",
   "algorithm": "sklearn.ensemble.IsolationForest",
   "version": "1.0.0",
-  "created_at": "2026-10-12T07:47:12.698997+00:00",
+  "created_at": "2026-10-12T13:17:12.698997+05:30",
   "feature_names": [
     "request_count",
     "failed_login_count",

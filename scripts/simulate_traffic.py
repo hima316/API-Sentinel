@@ -17,8 +17,10 @@ Usage:
 """
 
 import argparse
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 import json
+
+IST = timezone(timedelta(hours=5, minutes=30), name="IST")
 import logging
 from pathlib import Path
 import time
@@ -48,7 +50,7 @@ def run_scenario_normal_browsing(
     ]
 
     status_codes: List[int] = []
-    start_time = datetime.now(timezone.utc)
+    start_time = datetime.now(IST)
 
     for i in range(count):
         method, path = endpoints[i % len(endpoints)]
@@ -65,7 +67,7 @@ def run_scenario_normal_browsing(
         "requests_sent": len(status_codes),
         "status_distribution": {str(c): status_codes.count(c) for c in set(status_codes)},
         "start_time": start_time.isoformat(),
-        "end_time": datetime.now(timezone.utc).isoformat(),
+        "end_time": datetime.now(IST).isoformat(),
     }
 
 
@@ -78,7 +80,7 @@ def run_scenario_normal_authenticated(
     """Simulate legitimate user logging in successfully and viewing resources."""
     logger.info("Executing Scenario: Normal Authenticated User (Client: %s)...", client_id)
     status_codes: List[int] = []
-    start_time = datetime.now(timezone.utc)
+    start_time = datetime.now(IST)
 
     # 1. Successful login
     login_res = client.post(
@@ -108,7 +110,7 @@ def run_scenario_normal_authenticated(
         "requests_sent": len(status_codes),
         "status_distribution": {str(c): status_codes.count(c) for c in set(status_codes)},
         "start_time": start_time.isoformat(),
-        "end_time": datetime.now(timezone.utc).isoformat(),
+        "end_time": datetime.now(IST).isoformat(),
     }
 
 
@@ -121,7 +123,7 @@ def run_scenario_failed_logins(
     """Simulate credential brute-force attack with repeated failed logins."""
     logger.info("Executing Scenario: Repeated Failed Logins (Client: %s, Attempts: %d)...", client_id, count)
     status_codes: List[int] = []
-    start_time = datetime.now(timezone.utc)
+    start_time = datetime.now(IST)
 
     for i in range(count):
         res = client.post(
@@ -141,7 +143,7 @@ def run_scenario_failed_logins(
         "requests_sent": len(status_codes),
         "status_distribution": {str(c): status_codes.count(c) for c in set(status_codes)},
         "start_time": start_time.isoformat(),
-        "end_time": datetime.now(timezone.utc).isoformat(),
+        "end_time": datetime.now(IST).isoformat(),
     }
 
 
@@ -153,7 +155,7 @@ def run_scenario_request_burst(
     """Simulate rapid burst of requests (scraping or DoS flood) with no delay."""
     logger.info("Executing Scenario: Request Burst (Client: %s, Requests: %d, no delay)...", client_id, count)
     status_codes: List[int] = []
-    start_time = datetime.now(timezone.utc)
+    start_time = datetime.now(IST)
 
     for i in range(count):
         path = "/api/products" if i % 2 == 0 else f"/api/products/{1 + (i % 3)}"
@@ -168,7 +170,7 @@ def run_scenario_request_burst(
         "requests_sent": len(status_codes),
         "status_distribution": {str(c): status_codes.count(c) for c in set(status_codes)},
         "start_time": start_time.isoformat(),
-        "end_time": datetime.now(timezone.utc).isoformat(),
+        "end_time": datetime.now(IST).isoformat(),
     }
 
 
@@ -192,7 +194,7 @@ def run_scenario_endpoint_probing(
     ]
     logger.info("Executing Scenario: Endpoint Probing (Client: %s, Distinct Paths: %d)...", client_id, len(probe_paths))
     status_codes: List[int] = []
-    start_time = datetime.now(timezone.utc)
+    start_time = datetime.now(IST)
 
     for path in probe_paths:
         res = client.get(path, headers={"X-Client-ID": client_id})
@@ -208,7 +210,7 @@ def run_scenario_endpoint_probing(
         "requests_sent": len(status_codes),
         "status_distribution": {str(c): status_codes.count(c) for c in set(status_codes)},
         "start_time": start_time.isoformat(),
-        "end_time": datetime.now(timezone.utc).isoformat(),
+        "end_time": datetime.now(IST).isoformat(),
     }
 
 
@@ -220,7 +222,7 @@ def run_scenario_mixed_abuse(
     """Simulate multi-vector behavior: normal browsing mixed with probing and failed logins."""
     logger.info("Executing Scenario: Mixed Abuse Behavior (Client: %s)...", client_id)
     status_codes: List[int] = []
-    start_time = datetime.now(timezone.utc)
+    start_time = datetime.now(IST)
 
     # 1. Normal calls
     for path in ["/api/products", "/health", "/api/products/1"]:
@@ -255,7 +257,7 @@ def run_scenario_mixed_abuse(
         "requests_sent": len(status_codes),
         "status_distribution": {str(c): status_codes.count(c) for c in set(status_codes)},
         "start_time": start_time.isoformat(),
-        "end_time": datetime.now(timezone.utc).isoformat(),
+        "end_time": datetime.now(IST).isoformat(),
     }
 
 
@@ -305,7 +307,7 @@ def simulate_all_scenarios(
 
         total_requests = sum(m["requests_sent"] for m in manifests)
         summary = {
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(IST).isoformat(),
             "target_base_url": base_url,
             "total_clients": len(manifests),
             "total_requests": total_requests,

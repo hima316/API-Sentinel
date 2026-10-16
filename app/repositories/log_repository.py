@@ -71,7 +71,7 @@ class BaseLogRepository(ABC):
 
         Args:
             client_id: Identifier of the client.
-            since: Optional UTC datetime cutoff to filter logs within a time window.
+            since: Optional IST datetime cutoff to filter logs within a time window.
             limit: Optional maximum number of logs to return.
 
         Returns:
@@ -148,7 +148,7 @@ class InMemoryLogRepository(BaseLogRepository):
 class MongoLogRepository(BaseLogRepository):
     """MongoDB implementation of BaseLogRepository for persistent request logging.
 
-    Stores request log records in the configured MongoDB collection with UTC timestamps
+    Stores request log records in the configured MongoDB collection with IST timestamps
     and stable UUID identifiers.
     """
 

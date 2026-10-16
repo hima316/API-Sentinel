@@ -25,8 +25,10 @@ Usage:
 
 import argparse
 import csv
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 import json
+
+IST = timezone(timedelta(hours=5, minutes=30), name="IST")
 import logging
 from pathlib import Path
 import sys
@@ -435,7 +437,7 @@ def main() -> None:
 
     args = parser.parse_args()
     all_reports: Dict[str, Any] = {
-        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "timestamp": datetime.now(IST).isoformat(),
         "disclaimer": DISCLAIMER_TEXT,
     }
 
