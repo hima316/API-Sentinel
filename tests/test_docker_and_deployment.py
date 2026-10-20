@@ -85,7 +85,7 @@ def test_database_connection_error_handler_safeguard() -> None:
 
     mock_repo = MagicMock()
     mock_repo.get_logs.side_effect = DatabaseConnectionError(
-        "Connection failed to mongodb+srv://admin:secret123@cluster.mongodb.net"
+        "Connection failed to mongodb+srv://admin:mockpassword@cluster0.example.com"
     )
 
     app.dependency_overrides[get_log_repository] = lambda: mock_repo
@@ -95,7 +95,7 @@ def test_database_connection_error_handler_safeguard() -> None:
         assert response.status_code == 503
         data = response.json()
         assert "detail" in data
-        assert "secret123" not in response.text
+        assert "mockpassword" not in response.text
         assert "Traceback" not in response.text
         assert data["detail"] == "Database service is temporarily unavailable."
     finally:
@@ -153,7 +153,7 @@ def test_production_settings_overrides() -> None:
         HOST="0.0.0.0",
         PORT=8080,
         STORAGE_BACKEND="mongodb",
-        MONGODB_URI="mongodb+srv://user:pass@cluster0.mongodb.net",
+        MONGODB_URI="mongodb+srv://user:pass@cluster0.example.com",
     )
     assert prod_settings.ENVIRONMENT == "production"
     assert prod_settings.DEBUG is False

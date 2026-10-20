@@ -35,8 +35,8 @@ def mask_mongodb_uri(uri: Optional[str]) -> str:
     Prevents sensitive credentials from leaking into logs or exception messages.
 
     Example:
-        `mongodb+srv://user:secret123@cluster.mongodb.net/test` ->
-        `mongodb+srv://user:****@cluster.mongodb.net/test`
+        `mongodb+srv://user:password@cluster0.example.com/test` ->
+        `mongodb+srv://user:****@cluster0.example.com/test`
     """
     if not uri:
         return "<unset>"

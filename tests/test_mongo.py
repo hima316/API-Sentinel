@@ -40,11 +40,11 @@ def test_mask_mongodb_uri_standard() -> None:
 
 def test_mask_mongodb_uri_srv() -> None:
     """Verify that credentials in mongodb+srv:// Atlas URIs are masked."""
-    raw_uri = "mongodb+srv://atlasAdmin:P@ssw0rd123!@cluster0.abcde.mongodb.net/sentinel?retryWrites=true"
+    raw_uri = "mongodb+srv://atlasAdmin:mockSecretPass!@cluster0.example.com/sentinel?retryWrites=true"
     masked = mask_mongodb_uri(raw_uri)
-    assert "P@ssw0rd123!" not in masked
+    assert "mockSecretPass!" not in masked
     assert "atlasAdmin:****@" in masked
-    assert "cluster0.abcde.mongodb.net" in masked
+    assert "cluster0.example.com" in masked
 
 
 def test_mask_mongodb_uri_empty_or_none() -> None:
@@ -76,7 +76,7 @@ def test_empty_string_uri_raises_connection_error() -> None:
 
 def test_placeholder_uri_raises_connection_error() -> None:
     """Manager must raise DatabaseConnectionError when URI contains template placeholders."""
-    placeholder_uri = "mongodb+srv://<username>:<password>@cluster0.example.mongodb.net/?retryWrites=true&w=majority"
+    placeholder_uri = "mongodb+srv://<username>:<password>@cluster0.example.com/?retryWrites=true&w=majority"
     manager = MongoDBManager(uri=placeholder_uri, database_name="test_db")
     with pytest.raises(DatabaseConnectionError) as exc_info:
         manager.get_client()
